@@ -16,7 +16,22 @@ module.exports = {
     "^src/(.*)$": "<rootDir>/$1",
     "^@/(.*)$": "<rootDir>/$1",
   },
-  collectCoverageFrom: ["**/*.(t|j)s"],
+  collectCoverageFrom: [
+    "**/*.ts",
+    "!**/*.spec.ts",
+    "!main.ts",
+    "!**/*.module.ts",
+    "!**/*.dto.ts",
+  ],
   coverageDirectory: "../coverage",
   transformIgnorePatterns: ["node_modules/"],
+  coverageProvider: "v8",
+  coverageThreshold: {
+    global: {
+      statements: 80,
+      branches: 60,
+      functions: 80,
+      lines: 80,
+    },
+  },
 };
