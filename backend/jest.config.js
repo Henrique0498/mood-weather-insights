@@ -22,6 +22,7 @@ module.exports = {
     "!main.ts",
     "!**/*.module.ts",
     "!**/*.dto.ts",
+    "!**/types.ts",
   ],
   coverageDirectory: "../coverage",
   transformIgnorePatterns: ["node_modules/"],
