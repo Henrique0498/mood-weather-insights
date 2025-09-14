@@ -28,7 +28,7 @@ export class UserService {
       id: user.id,
       email: user.email,
       name: user.name,
-    }
+    };
   }
 
   findAll() {
@@ -42,7 +42,7 @@ export class UserService {
   }
 
   async findOne(id: UUID) {
-   return this.verifyExists(id);
+    return this.verifyExists(id);
   }
 
   async update(id: UUID, updateUserDto: UpdateUserDto) {
@@ -64,7 +64,7 @@ export class UserService {
     return;
   }
 
-  private async verifyExists(id: UUID) {
+  async verifyExists(id: UUID) {
     const user = await this.prisma.user.findUnique({
       where: { id },
       select: {
