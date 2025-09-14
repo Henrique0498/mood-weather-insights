@@ -17,5 +17,5 @@ export class FindRecentTopicsDto {
   @IsInt()
   @Min(1)
   @Max(10)
-  limit?: number; // default 2
+  limit?: number;
 }

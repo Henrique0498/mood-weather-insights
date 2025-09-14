@@ -46,15 +46,13 @@ describe("InsightsService (findWeather with cache + OpenWeatherService)", () => 
     expect(first).toEqual({ weather: "sunny" });
     expect(openWeather.findByLocation).toHaveBeenCalledTimes(1);
 
-    // Slightly different coords but same rounded key
     const dto2 = { lat: -23.551, lon: -46.6337 } as any;
     const second = await callFindWeather(dto2);
 
     expect(second).toEqual({ weather: "sunny" });
-    // still 1 call due to cache hit
+
     expect(openWeather.findByLocation).toHaveBeenCalledTimes(1);
 
-    // Ensure cache contains the value under the rounded key
     const key = `weather:${Number(dto.lat).toFixed(2)}:${Number(
       dto.lon
     ).toFixed(2)}`;
