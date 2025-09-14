@@ -18,3 +18,14 @@ model User {
 
   @@map("tb_user")
 }
+
+model Insight {
+  id        String   @id @default(uuid())
+  userId    String
+  topic     String
+  content   String
+  weather   Json
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}

@@ -1,11 +1,12 @@
-import { IsLatitude, IsLongitude, IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { UUID } from "crypto";
 
 export class FindInsightsDto {
-  @IsLatitude()
+  @IsUUID()
   @IsNotEmpty()
-  readonly lat: number;
+  userId: UUID;
 
-  @IsLongitude()
-  @IsNotEmpty()
-  readonly lon: number;
+  @IsString()
+  @IsOptional()
+  topic?: string;
 }

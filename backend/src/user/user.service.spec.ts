@@ -1,17 +1,17 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from './user.service';
-import { PrismaService } from '@/common/prisma/prisma.service';
-import { randomUUID } from 'crypto';
-import { BadRequestException } from '@nestjs/common';
+import { Test, TestingModule } from "@nestjs/testing";
+import { UserService } from "./user.service";
+import { PrismaService } from "@/common/prisma/prisma.service";
+import { randomUUID } from "crypto";
+import { BadRequestException } from "@nestjs/common";
 
-jest.mock('argon2', () => ({
+jest.mock("argon2", () => ({
   __esModule: true,
   default: {},
-  hash: jest.fn().mockResolvedValue('hashedpw'),
+  hash: jest.fn().mockResolvedValue("hashedpw"),
   verify: jest.fn().mockResolvedValue(true),
 }));
 
-describe('UserService', () => {
+describe("UserService", () => {
   let service: UserService;
   let prisma: {
     user: {
@@ -47,23 +47,36 @@ describe('UserService', () => {
     service = module.get<UserService>(UserService);
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 
-  it('create should hash password and return sanitized user', async () => {
-    const dto = { email: 'a@a.com', name: 'Alice', password: 'secret' } as any;
-    const created = { id: randomUUID(), email: dto.email, name: dto.name, password: 'hashedpw' } as any;
+  it("create should hash password and return sanitized user", async () => {
+    const dto = { email: "a@a.com", name: "Alice", password: "secret" } as any;
+    const created = {
+      id: randomUUID(),
+      email: dto.email,
+      name: dto.name,
+      password: "hashedpw",
+    } as any;
     prisma.user.create.mockResolvedValue(created);
 
-    await expect(service.create(dto)).resolves.toEqual({ id: created.id, email: created.email, name: created.name });
+    await expect(service.create(dto)).resolves.toEqual({
+      id: created.id,
+      email: created.email,
+      name: created.name,
+    });
     expect(prisma.user.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ email: dto.email, name: dto.name, password: 'hashedpw' }),
+      data: expect.objectContaining({
+        email: dto.email,
+        name: dto.name,
+        password: "hashedpw",
+      }),
     });
   });
 
-  it('findAll should select only id,email,name', async () => {
-    const list = [{ id: randomUUID(), email: 'x@x.com', name: 'X' }] as any;
+  it("findAll should select only id,email,name", async () => {
+    const list = [{ id: randomUUID(), email: "x@x.com", name: "X" }] as any;
     prisma.user.findMany.mockResolvedValue(list);
 
     await expect(service.findAll()).resolves.toEqual(list);
@@ -72,9 +85,9 @@ describe('UserService', () => {
     });
   });
 
-  it('findOne should use verifyExists (findUnique with select)', async () => {
+  it("findOne should use verifyExists (findUnique with select)", async () => {
     const id = randomUUID() as any;
-    const entity = { id, email: 'b@b.com', name: 'B' } as any;
+    const entity = { id, email: "b@b.com", name: "B" } as any;
     prisma.user.findUnique.mockResolvedValue(entity);
 
     await expect(service.findOne(id)).resolves.toEqual(entity);
@@ -84,7 +97,7 @@ describe('UserService', () => {
     });
   });
 
-  it('findOne should throw BadRequestException when not found', async () => {
+  it("findOne should throw BadRequestException when not found", async () => {
     const id = randomUUID() as any;
     prisma.user.findUnique.mockResolvedValue(null);
 
@@ -95,29 +108,34 @@ describe('UserService', () => {
     });
   });
 
-  it('update should verify existence then delegate to prisma.update', async () => {
+  it("update should verify existence then delegate to prisma.update", async () => {
     const id = randomUUID() as any;
-    const dto = { name: 'Bob' } as any;
-    const existing = { id, email: 'b@b.com', name: 'B' } as any;
-    const updated = { id, email: 'b@b.com', name: 'Bob' } as any;
+    const dto = { name: "Bob" } as any;
+    const existing = { id, email: "b@b.com", name: "B" } as any;
+    const updated = { id, email: "b@b.com", name: "Bob" } as any;
     prisma.user.findUnique.mockResolvedValue(existing);
     prisma.user.update.mockResolvedValue(updated);
 
     await expect(service.update(id, dto)).resolves.toEqual(updated);
-    expect(prisma.user.update).toHaveBeenCalledWith({ where: { id }, data: dto });
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id },
+      data: dto,
+    });
   });
 
-  it('update should throw BadRequestException when entity does not exist', async () => {
+  it("update should throw BadRequestException when entity does not exist", async () => {
     const id = randomUUID() as any;
     prisma.user.findUnique.mockResolvedValue(null);
 
-    await expect(service.update(id, { name: 'X' } as any)).rejects.toThrow('User not found');
+    await expect(service.update(id, { name: "X" } as any)).rejects.toThrow(
+      "User not found"
+    );
     expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
-  it('remove should verify existence then delete and return void', async () => {
+  it("remove should verify existence then delete and return void", async () => {
     const id = randomUUID() as any;
-    const existing = { id, email: 'b@b.com', name: 'B' } as any;
+    const existing = { id, email: "b@b.com", name: "B" } as any;
     prisma.user.findUnique.mockResolvedValue(existing);
     prisma.user.delete.mockResolvedValue(existing);
 
@@ -125,7 +143,7 @@ describe('UserService', () => {
     expect(prisma.user.delete).toHaveBeenCalledWith({ where: { id } });
   });
 
-  it('remove should throw BadRequestException when entity does not exist', async () => {
+  it("remove should throw BadRequestException when entity does not exist", async () => {
     const id = randomUUID() as any;
     prisma.user.findUnique.mockResolvedValue(null);
 
@@ -133,14 +151,14 @@ describe('UserService', () => {
     expect(prisma.user.delete).not.toHaveBeenCalled();
   });
 
-  it('verifyPassword should return true or false based on argon2.verify', async () => {
-    const argon2 = require('argon2');
+  it("verifyPassword should return true or false based on argon2.verify", async () => {
+    const argon2 = require("argon2");
 
-    // default mockResolvedValue(true)
-    await expect(service.verifyPassword('hashed', 'plain')).resolves.toBe(true);
+    await expect(service.verifyPassword("hashed", "plain")).resolves.toBe(true);
 
-    // next call returns false
     argon2.verify.mockResolvedValueOnce(false);
-    await expect(service.verifyPassword('hashed', 'plain')).resolves.toBe(false);
+    await expect(service.verifyPassword("hashed", "plain")).resolves.toBe(
+      false
+    );
   });
 });
