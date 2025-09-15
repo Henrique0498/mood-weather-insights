@@ -1,13 +1,14 @@
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StatusBar } from "react-native";
 import { Link } from "expo-router";
+import Header from "@/components/Header";
 
 export default function HomeScreen() {
   return (
-    <View className="flex-1 items-center justify-center gap-4">
+    <View>
+      <Header />
+
       <Text className="text-2xl">Home - Hello World</Text>
-      <Link href="/(auth)/login" asChild>
-        <Button title="Ir para Login" onPress={() => {}} />
-      </Link>
+
       <Link href="/insights" asChild>
         <Button title="Ir para Insights" onPress={() => {}} />
       </Link>

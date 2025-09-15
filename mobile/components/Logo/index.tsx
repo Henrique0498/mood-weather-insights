@@ -1,26 +1,14 @@
 import { Image } from "expo-image";
 import { View, Text } from "react-native";
 
-const blurhash =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
 export function Logo() {
   return (
-    <View>
+    <View className="flex items-center gap-3 pt-12 pb-20">
       <Image
         source={require("../../assets/images/icon.png")}
-        style={{ width: 300, height: 200, borderRadius: 8 }}
-        placeholder={blurhash}
-        contentFit="cover"
-        transition={1000}
+        style={{ width: 108, height: 108, borderRadius: 8 }}
       />
-      <Text className={styles.title}>My Insights</Text>
+      <Text className="text-5xl font-bold text-primary-950">ThinkLy</Text>
     </View>
   );
 }
-
-const styles = {
-  container: `items-center flex-1 justify-center`,
-  separator: `h-[1px] my-7 w-4/5 bg-gray-200`,
-  title: `text-xl font-bold text-emerald-700 mt-4`,
-};
