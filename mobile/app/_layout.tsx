@@ -12,6 +12,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import "../assets/styles/global.css";
 
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
+import '@/assets/styles/global.css';
+
 export const unstable_settings = {
   anchor: "(tabs)",
 };
@@ -26,7 +29,9 @@ export default function RootLayout() {
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    
+    <GluestackUIProvider mode="light">
+      <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <GluestackUIProvider config={config}>
           <ThemeProvider value={DefaultTheme}>
@@ -39,5 +44,7 @@ export default function RootLayout() {
         </GluestackUIProvider>
       </SafeAreaProvider>
     </QueryClientProvider>
+    </GluestackUIProvider>
+  
   );
 }
