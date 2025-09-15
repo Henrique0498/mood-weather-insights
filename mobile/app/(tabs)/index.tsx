@@ -3,15 +3,8 @@ import { Link } from "expo-router";
 
 export default function HomeScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 16,
-      }}
-    >
-      <Text style={{ fontSize: 24 }}>Home - Hello World</Text>
+    <View className="flex-1 items-center justify-center gap-4">
+      <Text className="text-2xl">Home - Hello World</Text>
       <Link href="/(auth)/login" asChild>
         <Button title="Ir para Login" onPress={() => {}} />
       </Link>

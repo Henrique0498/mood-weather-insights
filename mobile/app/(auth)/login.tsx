@@ -1,17 +1,12 @@
 import { Link } from "expo-router";
 import { View, Text, Button } from "react-native";
+import { Logo } from "@/components/Logo";
 
 export default function LoginScreen() {
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 12,
-      }}
-    >
-      <Text style={{ fontSize: 24 }}>Login - Hello World</Text>
+    <View className="flex-1 items-center justify-center gap-4">
+      <Logo />
+      <Text className="text-2xl text-emerald-300">Login</Text>
       <Link href="/sign-up" asChild>
         <Button title="Go to Sign Up" onPress={() => {}} />
       </Link>
