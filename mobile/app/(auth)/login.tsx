@@ -5,12 +5,57 @@ import { Input, InputField } from "@/components/ui/input";
 import { Button, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Link, LinkText } from "@/components/ui/link";
+import { useMutation } from "@tanstack/react-query";
+import { loginRequest } from "@/lib/auth-api";
+import { useAuthStore } from "@/stores/auth";
+import Toast from "react-native-toast-message";
+
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoginFormData, loginSchema } from "./utils/login-schema";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const setAuth = useAuthStore((s) => s.setAuth);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: LoginFormData) => loginRequest(data),
+    onSuccess: ({ data }) => {
+      setAuth({
+        user: data.user,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+      });
+
+      router.replace("/(tabs)");
+    },
+    onError: (error) => {
+      Toast.show({
+        type: "error",
+        text1: "Falha ao fazer login",
+        text2: error.message,
+        visibilityTime: 4000,
+        autoHide: true,
+      });
+    },
+  });
+
+  const onSubmit = (data: LoginFormData) => mutate(data);
 
   return (
-    <View className="items-center gap-[72px] px-6 py-8">
+    <View className="items-center gap-[72px] bg-white px-6 py-8 flex-1">
       <Logo />
 
       <View className="w-full gap-8">
@@ -18,25 +63,52 @@ export default function LoginScreen() {
 
         <View className="gap-6">
           <View className="gap-4">
-            <Input
-              variant="underlined"
-              size="lg"
-              isDisabled={false}
-              isInvalid={false}
-              isReadOnly={false}
-            >
-              <InputField placeholder="Email" />
-            </Input>
-
-            <Input
-              variant="underlined"
-              size="lg"
-              isDisabled={false}
-              isInvalid={false}
-              isReadOnly={false}
-            >
-              <InputField placeholder="Senha" />
-            </Input>
+            <View>
+              <Controller
+                control={control}
+                name="email"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    variant="underlined"
+                    size="lg"
+                    isInvalid={!!errors.email}
+                  >
+                    <InputField
+                      placeholder="Email"
+                      value={value}
+                      onChangeText={onChange}
+                      autoCapitalize="none"
+                    />
+                  </Input>
+                )}
+              />
+              {errors.email && (
+                <Text className="text-red-500">{errors.email.message}</Text>
+              )}
+            </View>
+            <View>
+              <Controller
+                control={control}
+                name="password"
+                render={({ field: { onChange, value } }) => (
+                  <Input
+                    variant="underlined"
+                    size="lg"
+                    isInvalid={!!errors.password}
+                  >
+                    <InputField
+                      placeholder="Senha"
+                      value={value}
+                      onChangeText={onChange}
+                      secureTextEntry
+                    />
+                  </Input>
+                )}
+              />
+              {errors.password && (
+                <Text className="text-red-500">{errors.password.message}</Text>
+              )}
+            </View>
           </View>
 
           <View className="gap-2">
@@ -44,9 +116,10 @@ export default function LoginScreen() {
               variant="solid"
               size="md"
               action="primary"
-              onPress={() => router.replace("/(tabs)")}
+              isDisabled={isPending}
+              onPress={handleSubmit(onSubmit)}
             >
-              <ButtonText>Login</ButtonText>
+              <ButtonText>{isPending ? "Entrando..." : "Login"}</ButtonText>
             </Button>
 
             <View className="flex-row gap-1">

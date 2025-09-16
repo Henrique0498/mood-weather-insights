@@ -12,6 +12,8 @@ export class AuthController {
   @Post("login")
   @HttpCode(HttpStatus.OK)
   login(@Body() dto: LoginDto) {
+    console.log("bateu na api" + JSON.stringify(dto));
+
     return this.authService.login(dto);
   }
 
