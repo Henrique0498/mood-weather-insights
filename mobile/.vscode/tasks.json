@@ -9,6 +9,13 @@
 			"isBackground": false,
 			"problemMatcher": [],
 			"group": "build"
+		},
+		{
+			"label": "Install Hugeicons deps",
+			"type": "shell",
+			"command": "npm i @hugeicons/react-native @hugeicons/core-free-icons react-native-svg",
+			"isBackground": false,
+			"group": "build"
 		}
 	]
 }

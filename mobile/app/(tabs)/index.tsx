@@ -1,26 +1,49 @@
-import { View, Text, Button } from "react-native";
-import { Link } from "expo-router";
+import { KeyboardAvoidingView, ScrollView, View } from "react-native";
+import Header from "@/components/Header";
+import Chat from "@/components/Chat";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { InsightsList } from "@/components/Insights";
+import EmptyInsights from "@/components/EmptyInsigths";
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
+  const isEmpty = !Boolean(insights.length);
+  const CHAT_HEIGHT = isEmpty ? 160 : 80;
+  const bottomPadding = CHAT_HEIGHT + insets.bottom + 16;
+
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        gap: 16,
-      }}
-    >
-      <Text style={{ fontSize: 24 }}>Home - Hello World</Text>
-      <Link href="/(auth)/login" asChild>
-        <Button title="Ir para Login" onPress={() => {}} />
-      </Link>
-      <Link href="/insights" asChild>
-        <Button title="Ir para Insights" onPress={() => {}} />
-      </Link>
-      <Link href="/account" asChild>
-        <Button title="Ir para Conta" onPress={() => {}} />
-      </Link>
+    <View className="bg-white flex-1">
+      <Header />
+
+      <KeyboardAvoidingView className="gap-6 flex-1">
+        <ScrollView
+          contentContainerStyle={{
+            padding: 24,
+            gap: 8,
+            paddingBottom: bottomPadding, // espaço para o Chat sobreposto
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {(isEmpty && <EmptyInsights />) || (
+            <InsightsList insights={insights} />
+          )}
+        </ScrollView>
+
+        <View
+          className=""
+          pointerEvents="box-none"
+          style={{
+            position: "absolute",
+            left: 24,
+            right: 24,
+            bottom: insets.bottom + 8,
+          }}
+        >
+          <Chat isEmpty={isEmpty} />
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
+
+const insights = [];
