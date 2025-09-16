@@ -2,9 +2,9 @@ import { Tabs } from "expo-router";
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import {
-  Home02Icon,
   Idea01Icon,
   Settings01Icon,
+  Home02FreeIcons,
 } from "@hugeicons/core-free-icons";
 
 import { HapticTab } from "@/components/haptic-tab";
@@ -16,6 +16,18 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#292929",
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: {
+          height: 100,
+          paddingBottom: 24,
+          paddingTop: 5,
+          borderTopColor: "#fff",
+          boxShadow: "none",
+          elevation: 0,
+        },
+        tabBarItemStyle: {
+          flex: 1,
+          padding: 8,
+        },
       }}
     >
       <Tabs.Screen
@@ -24,11 +36,11 @@ export default function TabLayout() {
           title: "Home",
           tabBarLabel: ({ focused, color }) => (
             <Text bold={focused} style={{ color }}>
-              Home
+              Inicio
             </Text>
           ),
-          tabBarIcon: ({ color, size, focused }) => (
-            <HugeiconsIcon icon={Home02Icon} color={color} size={size} />
+          tabBarIcon: ({ color, size }) => (
+            <HugeiconsIcon icon={Home02FreeIcons} color={color} size={size} />
           ),
         }}
       />
@@ -47,12 +59,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="account"
+        name="settings"
         options={{
-          title: "Conta",
+          title: "Configuração",
           tabBarLabel: ({ focused, color }) => (
             <Text bold={focused} style={{ color }}>
-              Conta
+              Configuração
             </Text>
           ),
           tabBarIcon: ({ color, size }) => (

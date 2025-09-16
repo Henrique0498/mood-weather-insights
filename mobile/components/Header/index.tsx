@@ -1,10 +1,13 @@
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import { Text } from "../ui/text";
 import { Avatar, AvatarImage } from "../ui/avatar";
 
 export default function Header() {
   return (
-    <View className="p-4 gap-2 bg-white">
+    <View
+      className="p-4 gap-2 bg-white shadow-md"
+      style={Platform.OS === "android" ? { elevation: 10 } : undefined}
+    >
       <Text className="text-xl text-center">ThinkLy</Text>
 
       <View className="flex-row items-center gap-4">
