@@ -1,15 +1,26 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button, ButtonIcon, ButtonText } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { useAuthStore } from "@/stores/auth";
 import {
   Delete02Icon,
   Edit02Icon,
   Logout01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react-native";
+import { useRouter } from "expo-router";
+import { use } from "react";
 import { View } from "react-native";
 
 export default function AccountScreen() {
+  const router = useRouter();
+  const { user, clearAuth } = useAuthStore((s) => s);
+
+  function handleLogout() {
+    clearAuth();
+    router.replace("/(auth)/login");
+  }
+
   return (
     <View className="bg-white flex-1 px-6 pb-4 pt-11 gap-4">
       <View className="py-1.5">
@@ -24,12 +35,12 @@ export default function AccountScreen() {
             />
           </Avatar>
 
-          <Text className="text-lg font-semibold">Nome do Usuário</Text>
+          <Text className="text-lg font-semibold">{user?.name}</Text>
         </View>
 
         <View className="gap-3">
-          <SettingItem title="Nome" value="Nome do Usuário" />
-          <SettingItem title="Email" value="usuario@example.com" />
+          <SettingItem title="Nome" value={user?.name!} />
+          <SettingItem title="Email" value={user?.email!} />
           <SettingItem title="Senha" value="**********" />
         </View>
 
@@ -46,7 +57,11 @@ export default function AccountScreen() {
             />
             <ButtonText>Excluir conta</ButtonText>
           </Button>
-          <Button action="secondary" className="justify-start px-6">
+          <Button
+            action="secondary"
+            className="justify-start px-6"
+            onPress={handleLogout}
+          >
             <ButtonIcon
               as={() => <HugeiconsIcon icon={Logout01Icon} size={24} />}
             />

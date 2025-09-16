@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import {
@@ -6,10 +6,18 @@ import {
   Settings01Icon,
   Home02FreeIcons,
 } from "@hugeicons/core-free-icons";
-
 import { HapticTab } from "@/components/haptic-tab";
 import { Text } from "@/components/ui/text";
+import { useAuthStore } from "@/stores/auth";
+
 export default function TabLayout() {
+  const router = useRouter();
+  const { user } = useAuthStore((s) => s);
+
+  if (!user) {
+    router.replace("/(auth)/login");
+  }
+
   return (
     <Tabs
       screenOptions={{

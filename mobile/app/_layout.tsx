@@ -8,7 +8,7 @@ import { GluestackUIProvider } from "@/components/ui/gluestack-ui-provider";
 import Toast from "react-native-toast-message";
 
 import "../assets/styles/global.css";
-import { KeyboardAvoidingView } from "react-native";
+import { KeyboardAvoidingView, StatusBar } from "react-native";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -16,11 +16,13 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const queryClient = new QueryClient();
+
   return (
     <GluestackUIProvider>
       <QueryClientProvider client={queryClient}>
         <KeyboardAvoidingView enabled className="flex-1" behavior="padding">
           <SafeAreaProvider>
+            <StatusBar />
             <ThemeProvider value={DefaultTheme}>
               <Stack initialRouteName="(auth)">
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />

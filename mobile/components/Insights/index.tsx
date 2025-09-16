@@ -3,6 +3,8 @@ import { Text } from "../ui/text";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Link } from "../ui/link";
+import { InsightResponse } from "@/lib/insights-api";
+import { format } from "date-fns";
 
 interface InsightsCardProps {
   id: string;
@@ -11,7 +13,7 @@ interface InsightsCardProps {
   createdAt: string;
 }
 
-export function InsightsList({ insights }: { insights: InsightsCardProps[] }) {
+export function InsightsList({ insights }: { insights: InsightResponse[] }) {
   return (
     <>
       <View className="pb-2">
@@ -53,7 +55,9 @@ export function InsightsItem({ topic, content, createdAt }: InsightsCardProps) {
 
         <View className="flex flex-row text-2xs gap-1">
           <Text className="font-semibold">Data:</Text>
-          <Text className=" text-gray-400">{createdAt}</Text>
+          <Text className=" text-gray-400">
+            {format(new Date(createdAt), "HH:mm - dd/MM/yy")}
+          </Text>
         </View>
       </View>
 
