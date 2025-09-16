@@ -81,7 +81,35 @@ export class UserService {
     return user;
   }
 
-  verifyPassword(hashedPassword: string, plainPassword: string) {
-    return argon2.verify(hashedPassword, plainPassword);
+  async verifyExistsByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    return user;
+  }
+
+  async verifyPassword(plainPassword: string, userId: UUID) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        password: true,
+      },
+    });
+
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+
+    return argon2.verify(user.password, plainPassword);
   }
 }

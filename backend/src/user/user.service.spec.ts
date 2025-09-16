@@ -154,11 +154,17 @@ describe("UserService", () => {
   it("verifyPassword should return true or false based on argon2.verify", async () => {
     const argon2 = require("argon2");
 
-    await expect(service.verifyPassword("hashed", "plain")).resolves.toBe(true);
+    const userId = "user-id" as any;
+    prisma.user.findUnique.mockResolvedValue({ password: "storedhash" });
+
+    await expect(service.verifyPassword("plain", userId)).resolves.toBe(true);
+    expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      where: { id: userId },
+      select: { password: true },
+    });
+    expect(argon2.verify).toHaveBeenCalledWith("storedhash", "plain");
 
     argon2.verify.mockResolvedValueOnce(false);
-    await expect(service.verifyPassword("hashed", "plain")).resolves.toBe(
-      false
-    );
+    await expect(service.verifyPassword("plain", userId)).resolves.toBe(false);
   });
 });
