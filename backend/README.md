@@ -1,99 +1,216 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Backend – Mood Weather Insights
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API pessoal em **NestJS** responsável por autenticar usuários e gerar **temas (insights)** combinando:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+1. **Tópico enviado pelo usuário**
+2. **Dados de clima atual** (OpenWeather)
+3. **Enriquecimento temático** via OpenAI (gera texto contextualizado ao tópico dentro do contexto meteorológico)
 
-## Description
+O resultado é armazenado como Insight no Postgres via **Prisma**. Autenticação com **JWT** (access + refresh tokens).
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack
 
-## Project setup
+- NestJS 11
+- Prisma + PostgreSQL
+- JWT (access / refresh)
+- OpenAI (geração de tema)
+- OpenWeather (dados meteorológicos)
+- Cache (planejado)
 
-```bash
-$ npm install
+## Estrutura (principais diretórios)
+
+```text
+src/
+  auth/
+  user/
+  insights/
+  common/
+    open-ai/
+    open-weather/
+    auth/
+prisma/
+  schema.prisma
 ```
 
-## Compile and run the project
+## Docker
+
+Multi-stage Dockerfile incluso.
+
+### Script rápido
+
+Após configurar `.env` (incluindo `DATABASE_URL` apontando para um Postgres acessível):
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run deploy:docker
 ```
 
-## Run tests
+O script faz:
+
+1. `docker build -t mood-backend .`
+2. Remove container anterior se existir (`docker rm -f mood-backend`)
+3. `docker run --name mood-backend --env-file .env -p 3000:3000 mood-backend`
+
+### Build manual
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker build -t mood-backend .
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Executar manualmente
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+docker run --name mood-backend \
+  --env-file .env \
+  -p 3000:3000 \
+  mood-backend
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Sem `--env-file`, pode-se passar variáveis isoladamente (exemplo):
 
-## Resources
+```bash
+docker run --name mood-backend \
+  -e DATABASE_URL="postgresql://user:password@host:5432/mydatabase?schema=public" \
+  -e OPENWEATHER_KEY=xxx \
+  -e OPENWEATHER_BASE_URL=https://api.openweathermap.org \
+  -e OPENAI_API_KEY=xxx \
+  -e JWT_SECRET=super-secret \
+  -e PORT=3000 \
+  -p 3000:3000 \
+  mood-backend
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### Migrações (Produção / Deploy real)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Se você estiver usando migrations aplicadas, antes de iniciar a aplicação em produção rode:
 
-## Support
+```bash
+docker exec -it mood-backend npx prisma migrate deploy
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Ou adapte a imagem para executar `prisma migrate deploy` como entrypoint em ambiente controlado (CI/CD).
 
-## Stay in touch
+### Compose (exemplo básico)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```yaml
+services:
+  db:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: mood
+    ports:
+      - "5432:5432"
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/mood?schema=public
+      OPENWEATHER_KEY: your-key
+      OPENWEATHER_BASE_URL: https://api.openweathermap.org
+      OPENAI_API_KEY: your-key
+      JWT_SECRET: change-me
+      PORT: 3000
+    ports:
+      - "3000:3000"
+```
 
-## License
+## Scripts (npm)
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Script                   | Descrição                                                        |
+| ------------------------ | ---------------------------------------------------------------- |
+| `npm run start`          | Inicia a aplicação em modo padrão (sem watch).                   |
+| `npm run dev`            | Desenvolvimento com reload automático (watch).                   |
+| `npm run start:debug`    | Desenvolvimento com Node Inspector habilitado para depuração.    |
+| `npm run build`          | Transpila TypeScript para JavaScript em `dist/`.                 |
+| `npm run start:prod`     | Executa a aplicação compilada (`node dist/main`).                |
+| `npm run lint`           | Verifica problemas de lint usando Biome (somente leitura).       |
+| `npm run lint:fix`       | Tenta corrigir automaticamente problemas de lint.                |
+| `npm run format`         | Formata o código (Biome format).                                 |
+| `npm run test`           | Executa testes unitários (Jest).                                 |
+| `npm run test:watch`     | Executa testes unitários em modo watch.                          |
+| `npm run test:cov`       | Executa testes e gera relatório de cobertura.                    |
+| `npm run test:debug`     | Roda Jest com debugger (`--inspect-brk`, execução serial).       |
+| `npm run test:e2e`       | Executa testes end-to-end com config dedicada.                   |
+| `npm run deploy:docker`  | Atalho para `docker:rebuild` (reconstrói e sobe container).      |
+| `npm run docker:build`   | Build da imagem Docker `mood-backend`.                           |
+| `npm run docker:run`     | Sobe container usando `.env` e expõe porta 3000.                 |
+| `npm run docker:rebuild` | Build + remove container anterior (se existir) + run novo.       |
+| `npm run docker:stop`    | Para e remove o container `mood-backend`.                        |
+| `npm run docker:logs`    | Segue (follow) os logs do container.                             |
+| `npm run docker:exec:sh` | Abre um shell dentro do container para inspeção.                 |
+| `npm run docker:migrate` | Executa `prisma migrate deploy` dentro do container em execução. |
+
+Observações:
+
+- Use `docker:migrate` somente após container iniciado e banco acessível.
+- Em Windows PowerShell os redirecionamentos já foram tratados nos scripts (`2>NUL || true`).
+- Para rebuild rápido durante ajustes de código: `npm run docker:rebuild`.
+
+## Banco de Dados (Postgres via Docker Compose)
+
+Subir Postgres local:
+
+```bash
+docker compose up -d postgres
+```
+
+Gerar client Prisma (necessário após alterar schema):
+
+```bash
+npx prisma generate
+```
+
+## Execução Local
+
+```bash
+cp .env.exemple .env   # preencha valores
+npm install
+npx prisma generate
+npm run dev
+```
+
+API: `http://localhost:${PORT|3000}`
+
+## Build de Produção (sem Docker)
+
+```bash
+<!-- seção Docker antiga removida (substituída pela nova acima) -->
+  -e PORT=3000 \
+  -p 3000:3000 \
+  mood-backend
+```
+
+Para compose: adicionar serviço da API referenciando a mesma network do Postgres.
+
+## Refresh Token
+
+Endpoint `/auth/refresh` deve retornar `{ accessToken, refreshToken? }` para o app mobile continuar sessão sem pedir novo login.
+
+## Testes
+
+```bash
+npm run test       # unit
+npm run test:e2e   # e2e
+npm run test:cov   # cobertura
+```
+
+## Segurança / Boas Práticas
+
+- Alterar `JWT_SECRET` em qualquer ambiente exposto
+- Não versionar `.env`
+- Rate limiting (futuro)
+- Restringir CORS conforme domínios reais
+
+## Próximos Melhoramentos Possíveis
+
+- Endpoint `/health`
+- `prisma migrate deploy` em pipeline
+- Logs estruturados / observabilidade
+- Rotation de refresh token
+
+---
+
+Projeto pessoal – sem licença formal. Veja README raiz para panorama.

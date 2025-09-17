@@ -18,7 +18,15 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "deploy:docker": "npm run docker:rebuild",
+    "docker:build": "docker build -t mood-backend .",
+    "docker:run": "docker run --name mood-backend --env-file .env -p 3000:3000 mood-backend",
+    "docker:rebuild": "docker build -t mood-backend . && (docker rm -f mood-backend 2>NUL || true) && docker run --name mood-backend --env-file .env -p 3000:3000 mood-backend",
+    "docker:stop": "(docker stop mood-backend 2>NUL || true) && (docker rm -f mood-backend 2>NUL || true)",
+    "docker:logs": "docker logs -f mood-backend",
+    "docker:exec:sh": "docker exec -it mood-backend sh",
+    "docker:migrate": "docker exec -it mood-backend npx prisma migrate deploy"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",

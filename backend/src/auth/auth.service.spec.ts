@@ -66,6 +66,14 @@ describe("AuthService", () => {
       ).rejects.toBeInstanceOf(UnauthorizedException);
       expect(jwt.signAsync).not.toHaveBeenCalled();
     });
+
+    it("throws Unauthorized when user not found", async () => {
+      users.verifyExistsByEmail.mockResolvedValue(undefined);
+      await expect(
+        service.login({ email: "missing@a.com", password: "x" })
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(users.verifyPassword).not.toHaveBeenCalled();
+    });
   });
 
   describe("refresh", () => {
@@ -91,6 +99,14 @@ describe("AuthService", () => {
       jwt.verifyAsync.mockRejectedValue(new Error("bad"));
       await expect(service.refresh("bad-token")).rejects.toThrow();
     });
+
+    it("throws Unauthorized when user does not exist anymore", async () => {
+      jwt.verifyAsync.mockResolvedValue({ sub: "u1", email: "gone@a.com" });
+      users.verifyExists.mockResolvedValue(null);
+      await expect(service.refresh("token")).rejects.toBeInstanceOf(
+        UnauthorizedException
+      );
+    });
   });
 
   describe("register", () => {
@@ -106,7 +122,12 @@ describe("AuthService", () => {
         .mockResolvedValueOnce("refresh-token");
 
       await expect(
-        service.register({ name: "Alice", email: "a@a.com", password: "x" })
+        service.register({
+          name: "Alice",
+          email: "a@a.com",
+          password: "x",
+          confirmPassword: "x",
+        })
       ).resolves.toEqual({
         user: { id: "u1", email: "a@a.com", name: "Alice" },
         refreshToken: "refresh-token",
@@ -117,7 +138,25 @@ describe("AuthService", () => {
     it("rejects when email already exists", async () => {
       users.verifyExistsByEmail.mockResolvedValue({ id: "u1" });
       await expect(
-        service.register({ name: "Alice", email: "a@a.com", password: "x" })
+        service.register({
+          name: "Alice",
+          email: "a@a.com",
+          password: "x",
+          confirmPassword: "x",
+        })
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(users.create).not.toHaveBeenCalled();
+    });
+
+    it("rejects when passwords mismatch", async () => {
+      users.verifyExistsByEmail.mockResolvedValue(undefined);
+      await expect(
+        service.register({
+          name: "Alice",
+          email: "a@a.com",
+          password: "x",
+          confirmPassword: "y",
+        })
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(users.create).not.toHaveBeenCalled();
     });

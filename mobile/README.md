@@ -1,50 +1,113 @@
-# Welcome to your Expo app 👋
+# Mobile – Mood Weather Insights
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo **Expo / React Native** que autentica o usuário e solicita ao backend a geração de **temas (insights)** baseados em:
 
-## Get started
+1. Tópico digitado pelo usuário
+2. Clima atual (latitude/longitude → OpenWeather)
+3. Enriquecimento semântico via OpenAI
 
-1. Install dependencies
+O retorno é um texto temático contextualizado ao estado do tempo.
 
-   ```bash
-   npm install
-   ```
+## Stack
 
-2. Start the app
+- Expo + React Native 0.81
+- Expo Router (file-based navigation)
+- Zustand (estado auth)
+- Axios (HTTP + refresh token interceptor)
+- React Query (cache e sincronização server state)
+- NativeWind + Tailwind Variants + Gluestack UI (UI / design system)
+- Toastify React Native (feedback)
 
-   ```bash
-   npx expo start
-   ```
+## Estrutura Simplificada
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```text
+app/                # rotas (auth, tabs, insights)
+components/         # componentes de UI e domínio
+stores/             # zustand stores (auth)
+lib/                # api-client, chamadas HTTP, validações
+hooks/              # hooks custom (ex: localização)
+constants/          # config (API base)
+assets/             # imagens / estilos globais
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Pré-Requisitos
 
-## Learn more
+- Node 20+
+- Expo CLI (opcional) `npm i -g expo`
+- Backend rodando (ver README em `backend/`)
 
-To learn more about developing your project with Expo, look at the following resources:
+## Variáveis / Configuração
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+O endpoint base da API está em `constants/api.ts`. Ajuste se necessário:
 
-## Join the community
+```ts
+export const API_BASE_URL = "http://localhost:3000";
+```
 
-Join our community of developers creating universal apps.
+Se usar em dispositivo físico, exponha o host da máquina (ex: IP local).
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Instalação
+
+```bash
+npm install
+```
+
+## Execução
+
+```bash
+npx expo start          # abre interface interativa
+npx expo start --android
+npx expo start --ios    # em macOS
+npx expo start --web    # versão web (experimental)
+```
+
+Após iniciar, abra com:
+
+- Android Emulator / iOS Simulator
+- App Expo Go (escaneando QR)
+
+## Autenticação & Refresh Token
+
+- Armazena `accessToken` e `refreshToken` em store persistida (memória custom baseada em Map – pode trocar por SecureStore depois).
+- Interceptor Axios renova token ao receber 401 via `/auth/refresh`.
+- Falha no refresh => limpa store e redireciona para `(auth)/login`.
+
+## Geração de Temas
+
+Fluxo:
+
+1. Usuário autentica
+2. Informa um tópico
+3. App obtém localização (se permitido) e envia tópico + lat/lon
+4. Backend busca clima + usa OpenAI para gerar tema
+5. Resposta exibida na lista/detalhe
+
+## Scripts Úteis
+
+```bash
+npm run reset-project   # limpa exemplo boilerplate original
+npm run lint            # lint (eslint config expo)
+```
+
+## Troubleshooting
+
+| Problema                       | Causa Comum                   | Solução                              |
+| ------------------------------ | ----------------------------- | ------------------------------------ |
+| 401 constante                  | Refresh endpoint indisponível | Verifique `/auth/refresh` no backend |
+| Sem localização                | Permissão negada              | Ajustar permissões no dispositivo    |
+| Imagens/SVG não renderizam     | Metro sem transformer         | Conferir `metro.config.js`           |
+| Dispositivo físico não conecta | IP incorreto                  | Trocar `localhost` por IP da máquina |
+
+## Build (EAS opcional)
+
+Configuração EAS não inclusa; adicionar `eas.json` se for publicar.
+
+## Próximos Passos Sugeridos
+
+- Armazenar tokens com SecureStore/Keychain
+- Internacionalização
+- Testes de componentes (React Testing Library)
+
+---
+
+Projeto pessoal (sem licença formal). Veja README raiz para visão geral.
