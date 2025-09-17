@@ -3,6 +3,7 @@ import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import { Public } from "@/common/auth/public.decorator";
 import { CreateUserDto } from "@/user/dto/create-user.dto";
+import { RegisterDto } from "./dto/register.dto";
 
 @Controller("auth")
 export class AuthController {
@@ -25,7 +26,7 @@ export class AuthController {
   @Public()
   @Post("register")
   @HttpCode(HttpStatus.CREATED)
-  register(@Body() dto: CreateUserDto) {
+  register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
   }
 }
