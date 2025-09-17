@@ -12,6 +12,7 @@ import { CreateInsightsDto } from "./dto/create-insights.dto";
 import { FindInsightsDto } from "./dto/find-insights.dto";
 import { UUID } from "crypto";
 import { FindRecentTopicsDto } from "./dto/find-recent-topics.dto";
+import { DeleteTopicDto } from "./dto/delete-topic.dto";
 
 @Controller("insights")
 export class InsightsController {
@@ -33,6 +34,11 @@ export class InsightsController {
       userId: query.userId,
       limit: query.limit ?? 2,
     });
+  }
+
+  @Delete("topics")
+  clearTopics(@Body() data: DeleteTopicDto) {
+    return this.insightsService.removeTopic(data);
   }
 
   @Get(":id")

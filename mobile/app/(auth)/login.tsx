@@ -8,11 +8,11 @@ import { Link, LinkText } from "@/components/ui/link";
 import { useMutation } from "@tanstack/react-query";
 import { loginRequest } from "@/lib/auth-api";
 import { useAuthStore } from "@/stores/auth";
-import Toast from "react-native-toast-message";
 
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { LoginFormData, loginSchema } from "@/lib/validation/login-schema";
+import { Toast } from "toastify-react-native";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -59,7 +59,9 @@ export default function LoginScreen() {
       <Logo />
 
       <View className="w-full gap-8">
-        <Text className="text-4xl font-bold flex text-center">Login</Text>
+        <Text className="text-4xl font-bold flex text-center text-primary-950">
+          Login
+        </Text>
 
         <View className="gap-6">
           <View className="gap-4">

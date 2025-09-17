@@ -9,6 +9,7 @@ import { CreateUserDto } from "@/user/dto/create-user.dto";
 import { User } from "@prisma/client";
 import { UserService } from "@/user/user.service";
 import { UUID } from "crypto";
+import { RegisterDto } from "./dto/register.dto";
 
 export interface TypeGenerateTokens
   extends Omit<User, "password" | "createdAt" | "updatedAt" | "isActive"> {}
@@ -27,6 +28,11 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const response = await this.userService.verifyExistsByEmail(dto.email);
+
+    if (!response) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
     const isValidAuth = await this.userService.verifyPassword(
       dto.password,
       response.id as UUID
@@ -44,28 +50,28 @@ export class AuthService {
 
     const user = await this.userService.verifyExists(decoded.sub);
 
+    if (!user) {
+      throw new UnauthorizedException("User not found");
+    }
+
     return this.generateTokens(user);
   }
 
-  async register(dto: CreateUserDto) {
+  async register({ confirmPassword, ...dto }: RegisterDto) {
+    if (dto.password !== confirmPassword) {
+      throw new BadRequestException("Passwords do not match");
+    }
+
     const existing = await this.userService.verifyExistsByEmail(dto.email);
 
     if (existing) {
       throw new BadRequestException("Email already in use");
     }
 
-    const { default: argon2 } = await import("argon2");
-    const password = await argon2.hash(dto.password, {
-      type: argon2.argon2id,
-      memoryCost: 2 ** 12,
-      timeCost: 12,
-      parallelism: 1,
-    });
-
     const user = await this.userService.create({
       ...dto,
-      password,
     });
+
     return this.generateTokens(user);
   }
 

@@ -42,11 +42,21 @@ export class UserService {
   }
 
   async findOne(id: UUID) {
-    return this.verifyExists(id);
+    const exists = await this.verifyExists(id);
+
+    if (!exists) {
+      throw new BadRequestException("User not found");
+    }
+
+    return exists;
   }
 
   async update(id: UUID, updateUserDto: UpdateUserDto) {
-    await this.verifyExists(id);
+    const exists = await this.verifyExists(id);
+
+    if (!exists) {
+      throw new BadRequestException("User not found");
+    }
 
     return this.prisma.user.update({
       where: { id },
@@ -55,7 +65,11 @@ export class UserService {
   }
 
   async remove(id: UUID) {
-    await this.verifyExists(id);
+    const exists = await this.verifyExists(id);
+
+    if (!exists) {
+      throw new BadRequestException("User not found");
+    }
 
     await this.prisma.user.delete({
       where: { id },
@@ -75,7 +89,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new BadRequestException("User not found");
+      return null;
     }
 
     return user;
@@ -92,7 +106,7 @@ export class UserService {
     });
 
     if (!user) {
-      throw new BadRequestException("User not found");
+      return null;
     }
 
     return user;

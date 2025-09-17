@@ -12,6 +12,7 @@ import { UUID } from "crypto";
 import { OpenAiService } from "@/common/open-ai/open-ai.service";
 import { OpenWeatherService } from "@/common/open-weather/open-weather.service";
 import { OpenWeatherMapResponse } from "@/common/open-weather/types";
+import { DeleteTopicDto } from "./dto/delete-topic.dto";
 
 @Injectable()
 export class InsightsService {
@@ -134,6 +135,12 @@ export class InsightsService {
     await this.prisma.insight.delete({ where: { id } });
 
     return;
+  }
+
+  async removeTopic({ topic, userId }: DeleteTopicDto) {
+    await this.userService.verifyExists(userId);
+
+    await this.prisma.insight.deleteMany({ where: { userId, topic } });
   }
 
   async verifyExists(id: UUID) {

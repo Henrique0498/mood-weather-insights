@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createInsights } from "@/lib/insights-api";
 import * as Location from "expo-location";
 import { useAuthStore } from "@/stores/auth";
-import Toast from "react-native-toast-message";
+import { Toast } from "toastify-react-native";
 import { Controller, useForm } from "react-hook-form";
 
 export default function Chat({ isEmpty }: { isEmpty?: boolean }) {
