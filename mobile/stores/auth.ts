@@ -17,6 +17,7 @@ type AuthState = {
     accessToken: string;
     refreshToken: string;
   }) => void;
+  setTokens: (tokens: { accessToken: string; refreshToken?: string }) => void;
   clearAuth: () => void;
 };
 
@@ -29,6 +30,11 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       setAuth: ({ user, accessToken, refreshToken }) =>
         set({ isAuthenticated: true, user, accessToken, refreshToken }),
+      setTokens: ({ accessToken, refreshToken }) =>
+        set((state) => ({
+          accessToken,
+          refreshToken: refreshToken ?? state.refreshToken,
+        })),
       clearAuth: () =>
         set({
           isAuthenticated: false,
