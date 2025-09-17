@@ -1,4 +1,4 @@
-import { LoginFormData } from "@/app/(auth)/utils/login-schema";
+import { LoginFormData } from "@/lib/validation/login-schema";
 import { apiFetch } from "@/lib/api-client";
 
 export type LoginResponse = {

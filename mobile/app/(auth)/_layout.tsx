@@ -1,12 +1,11 @@
 import { useAuthStore } from "@/stores/auth";
-import { Stack, useRouter } from "expo-router";
+import { Stack, Redirect } from "expo-router";
 
 export default function AuthLayout() {
-  const router = useRouter();
   const user = useAuthStore((s) => s.user);
 
   if (user) {
-    router.replace("/(tabs)");
+    return <Redirect href="/(tabs)" />;
   }
 
   return (

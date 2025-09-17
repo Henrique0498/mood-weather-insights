@@ -40,7 +40,7 @@ export function TopicInsight({ createdAt, topic }: TopicInsightResponse) {
       }}
     >
       <View className="flex flex-row justify-between items-center">
-        <Text>{topic}</Text>
+        <Text className="capitalize">{topic}</Text>
 
         <HugeiconsIcon icon={ArrowRight01Icon} size={24} />
       </View>

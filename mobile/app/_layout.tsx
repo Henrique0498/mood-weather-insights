@@ -22,7 +22,6 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <KeyboardAvoidingView enabled className="flex-1" behavior="padding">
           <SafeAreaProvider>
-            <StatusBar />
             <ThemeProvider value={DefaultTheme}>
               <Stack initialRouteName="(auth)">
                 <Stack.Screen name="(auth)" options={{ headerShown: false }} />

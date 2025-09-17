@@ -10,8 +10,17 @@ export type GetInsightsParams = {
   userId: string;
 };
 
+export type DeleteInsightsParams = {
+  userId: string;
+  topic: string;
+};
+
 export function getTopicsInsights(params: GetInsightsParams) {
   return apiFetch
     .get<TopicInsightResponse[]>("/insights/topics", { params })
     .then((r) => r.data);
+}
+
+export function deleteTopicInsight(params: DeleteInsightsParams) {
+  return apiFetch.delete(`/insights/topics`, { data: params });
 }

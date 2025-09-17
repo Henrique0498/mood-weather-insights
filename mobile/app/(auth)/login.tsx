@@ -12,7 +12,7 @@ import Toast from "react-native-toast-message";
 
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { LoginFormData, loginSchema } from "./utils/login-schema";
+import { LoginFormData, loginSchema } from "@/lib/validation/login-schema";
 
 export default function LoginScreen() {
   const router = useRouter();

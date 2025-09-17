@@ -1,4 +1,4 @@
-import { Tabs, useRouter } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import React from "react";
 import { HugeiconsIcon } from "@hugeicons/react-native";
 import {
@@ -11,11 +11,10 @@ import { Text } from "@/components/ui/text";
 import { useAuthStore } from "@/stores/auth";
 
 export default function TabLayout() {
-  const router = useRouter();
   const { user } = useAuthStore((s) => s);
 
   if (!user) {
-    router.replace("/(auth)/login");
+    return <Redirect href="/(auth)/login" />;
   }
 
   return (
